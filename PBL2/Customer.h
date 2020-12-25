@@ -1,21 +1,35 @@
- #pragma once
-#include "Person.h"
-class Customer :
-    public Person
+#pragma once
+#include<iostream>
+#include<string>
+#include<vector>
+#include "Ticket.h"
+#include "DBHelper.h"
+using namespace std;
+class Ticket;
+class Customer
 {
 private:
-    string CustomerId;
-    string Password;
-    string email;
+    int customer_id;
+    string customer_name;
+    string address;
+    string phone_no;
+    string email_id;
+    vector<Ticket> ticket;
 public:
     Customer();
-    Customer(string,string,string,int,string,string);
-    ~Customer();
-    void setname(string);
-    string getname();
-    void setid(string);
-    string getid();
-    void setpw(string);
-    string getpw();
+    Customer(int, string, string, string, string);
+    void setCustomer_id(int);
+    int getCustomer_id();
+    void setTicket(vector<Ticket>);
+    int Search(int); //tim theo id
+    Ticket& getTicketAt(int); //throw int
+    void setTen(string);
+    void setDiaChi(string);
+    void setSDT(string);
+    void setEmail(string);
+    string getEmail();
+    void showTicket();
+    vector<Ticket> getTicket();
+    void AddTicket(Ticket&);
+    friend ostream& operator<<(ostream&, const Customer&);
 };
-

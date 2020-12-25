@@ -1,56 +1,112 @@
 #include "Customer.h"
 
-Customer::Customer(string id, string ten, string diachi, int sdt, string email, string pw)
-{
-	this->CustomerId = id;
-	this->ten = ten;
-	this->diachi = diachi;
-	this->sdt = sdt;
-	this->email = email;
-	this->Password = pw;
-}
+#include<vector>
+#include "Movie.h"
 
 Customer::Customer()
 {
-	this->CustomerId = "";
-	this->ten = "";
-	this->diachi = "";
-	this->sdt = 0;
-	this->email = "";
-	this->Password = "";
+    this->customer_id = 0 ;
+    this->customer_name = "";
+    this->address = "";
+    this->email_id = "";
+    this->phone_no= "";
 }
 
-Customer::~Customer()
+Customer::Customer(int customer_id, string customer_name, string address, string email_id, string phone_no)
 {
-
+    this->customer_id = customer_id ;
+    this->customer_name = customer_name;
+    this->address = address;
+    this->email_id = email_id;
+    this->phone_no= phone_no;
 }
 
-void Customer::setname(string name)
+
+void Customer::setCustomer_id(int customer_id)
 {
-	this->ten = name;
+    this->customer_id = customer_id ;
 }
 
-string Customer::getname()
+int Customer::getCustomer_id()
 {
-	return this->ten;
+    return this->customer_id;
 }
 
-void Customer::setid(string id)
+void Customer::setTicket(vector<Ticket> t)
 {
-	this->CustomerId = id;
+    this->ticket = t;
 }
 
-string Customer::getid()
+string Customer::getEmail()
 {
-	return this->CustomerId;
+    return this->email_id;
 }
 
-void Customer::setpw(string pw)
+int Customer::Search(int t_id)
 {
-	this->Password = pw;
+    int n = this->ticket.size();
+    for (int i = 0; i < n; i++)
+    {
+        if (this->ticket[i].getId() == t_id)
+            return i;
+    }
+    return -1;
 }
 
-string Customer::getpw()
+Ticket& Customer::getTicketAt(int index)
 {
-	return this->Password;
+    if (index >= 0 && index < this->ticket.size()) {
+        return this->ticket[index];
+    }
+    else throw - 1;
+}
+
+void Customer::setTen(string ten)
+{
+    this->customer_name = ten;
+}
+
+void Customer::setDiaChi(string dc)
+{
+    this->address = dc;
+}
+
+void Customer::setSDT(string sdt)
+{
+    this->phone_no = sdt;
+}
+
+void Customer::setEmail(string e)
+{
+    this->email_id = e;
+}
+
+void Customer::showTicket()
+{
+    int n = this->ticket.size();
+    cout << "Cac ve da dat: " << endl;
+    for (int i = n-1; i >= 0; i--)
+    {
+        cout << this->ticket[i];
+        cout << "----------------------------------------------------------------------" << endl;
+    }
+}
+
+vector<Ticket> Customer::getTicket()
+{
+    
+}
+
+void Customer::AddTicket(Ticket& t)
+{
+    this->ticket.push_back(t);
+}
+
+ostream& operator<<(ostream& o, const Customer& c)
+{
+    o << "Ten: " << c.customer_name << endl
+        << "Dia chi: " << c.address << endl
+        << "SDT: " << c.phone_no << endl
+        << "Email: " << c.email_id << endl;
+    return o;
 }

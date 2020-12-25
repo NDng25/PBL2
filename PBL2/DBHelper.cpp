@@ -1,11 +1,4 @@
 #include "DBHelper.h"
-
-void themdau(string s)
-{
-	string s1 = "'";
-	s = (s1 + s + s1);
-}
-
 void DBHelper::init()
 {
 	//initializations
@@ -22,8 +15,8 @@ void DBHelper::init()
 		close();
 
 	//output
-	cout << "Attempting connection to SQL Server...";
-	cout << "\n";
+//	cout << "Attempting connection to SQL Server...";
+//	cout << "\n";
 	switch (SQLDriverConnect(sqlConnHandle, NULL,(SQLWCHAR*)L"DRIVER={SQL Server};SERVER=NINH_DUONG\\SQLEXPRESS;DATABASE=bookTicket;trusted = true;",
 		SQL_NTS,
 		retconstring,
@@ -32,13 +25,13 @@ void DBHelper::init()
 		SQL_DRIVER_NOPROMPT)) {
 
 	case SQL_SUCCESS:
-		cout << "Successfully connected to SQL Server";
-		cout << "\n";
+//		cout << "Successfully connected to SQL Server";
+//		cout << "\n";
 		break;
 
 	case SQL_SUCCESS_WITH_INFO:
-		cout << "Successfully connected to SQL Server";
-		cout << "\n";
+//		cout << "Successfully connected to SQL Server";
+//		cout << "\n";
 		break;
 
 	case SQL_INVALID_HANDLE:
@@ -125,53 +118,11 @@ void DBHelper::init()
 //	SQLCancel(sqlStmtHandle);
 //}
 
-int DBHelper::SelectCount(string s)
-{
-	int count;
-	cout << "\n";
-	cout << "Executing T-SQL query... movie";
-	cout << "\n";
-	const char* str = s.c_str();
-	if (SQL_SUCCESS != SQLExecDirectA(sqlStmtHandle, (SQLCHAR*)str, SQL_NTS)) {
-		ShowError(SQL_HANDLE_DBC, sqlStmtHandle);
-		cout << "Error querying SQL Server";
-		cout << "\n";
-		close();
-	}
-	else {
-		//declare output variable and pointer
-		SQLINTEGER ptrSqlVersion;
-		char m_id[5];
-		char name[30];
-		char dir[30];
-		char cast[30];
-		char release_date[20];
-		char end[30];
-		char des[100];
-		char genre[50];
-		int running_time;
-		int price;
-		while (SQLFetch(sqlStmtHandle) == SQL_SUCCESS) {
-			SQLGetData(sqlStmtHandle, 1, SQL_INTEGER, &count, 1, &ptrSqlVersion);
-		}
-		return count;
-	}
-	SQLCancel(sqlStmtHandle);
-}
-
 vector<Movie> DBHelper::SelectMovie()
 {
-	vector<Movie> movie;
-	cout << "\n";
-	cout << "Executing T-SQL query... movie";
-	cout << "\n";
-	//const char* n = s2.c_str();
-	/*for (int i = 0; i < 50; i++)
-	{
-		n[i] = s2[i];
-	}*/
-	//if there is a problem executing the query then exit application
-	//else display query resultS
+	vector<Movie> m;
+	Movie list[100];
+	int count = 0;
 	if (SQL_SUCCESS != SQLExecDirect(sqlStmtHandle, (SQLWCHAR*)L"SELECT * FROM movie", SQL_NTS)) {
 		ShowError(SQL_HANDLE_DBC, sqlStmtHandle);
 		cout << "Error querying SQL Server";
@@ -191,6 +142,7 @@ vector<Movie> DBHelper::SelectMovie()
 		char genre[50];
 		int running_time;
 		int price;
+		int deleted;
 		while (SQLFetch(sqlStmtHandle) == SQL_SUCCESS) {
 			SQLGetData(sqlStmtHandle, 1, SQL_CHAR, m_id, SQL_RESULT_LEN, &ptrSqlVersion);
 			SQLGetData(sqlStmtHandle, 2, SQL_CHAR, name, SQL_RESULT_LEN, &ptrSqlVersion);
@@ -202,33 +154,32 @@ vector<Movie> DBHelper::SelectMovie()
 			SQLGetData(sqlStmtHandle, 8, SQL_CHAR, genre, SQL_RESULT_LEN, &ptrSqlVersion);
 			SQLGetData(sqlStmtHandle, 9, SQL_INTEGER, &running_time, 1, &ptrSqlVersion);
 			SQLGetData(sqlStmtHandle, 10, SQL_INTEGER, &price, 1, &ptrSqlVersion);
-			Movie* tmp = new Movie(string(m_id), string(name), string(dir), string(cast), string(release_date),string(end), string(des), string(genre), running_time, price);
-			movie.push_back(*tmp);
-			delete tmp;
+			SQLGetData(sqlStmtHandle, 11, SQL_INTEGER, &deleted, 1, &ptrSqlVersion);
+			list[count] = Movie(string(m_id), string(name), string(dir), string(cast), string(release_date),string(end), string(des), string(genre), running_time, price, deleted);
+			++count;
 		}
-		return movie;
+		for (int i = 0; i < count; i++)
+		{
+			m.push_back(list[i]);
+		}
+		return m;
 	}
 	SQLCancel(sqlStmtHandle);
 }
 
-Movie DBHelper::SelectMovie(string s)
+vector<Seat> DBHelper::SelectSeat(string room_id)
 {
-	//Movie tmp;
-	cout << "\n";
-	cout << "Executing T-SQL query... movie";
-	cout << "\n";
-	string s1 = "SELECT * FROM movie WHERE movie_id = '";
-	string s2 = "'";
-	string s3 = s1 + s + s2;
-	const char* str = s3.c_str();
-	//const char* n = s2.c_str();
-	/*for (int i = 0; i < 50; i++)
-	{
-		n[i] = s2[i];
-	}*/
-	//if there is a problem executing the query then exit application
-	//else display query resultS
-	if (SQL_SUCCESS != SQLExecDirectA(sqlStmtHandle, (SQLCHAR*)str, SQL_NTS)) {
+	vector<Seat> s;
+	Seat list[1000];
+	int count = 0;
+	//cout << "\n";
+	//cout << "Executing T-SQL query... movie";
+	//cout << "\n";
+	string str = "SELECT * FROM seat WHERE room_id = '";
+	string s1 = "'";
+	string strqr = str + room_id + s1;
+	const char* ss = strqr.c_str();
+	if (SQL_SUCCESS != SQLExecDirectA(sqlStmtHandle, (SQLCHAR*)ss, SQL_NTS)) {
 		ShowError(SQL_HANDLE_DBC, sqlStmtHandle);
 		cout << "Error querying SQL Server";
 		cout << "\n";
@@ -237,74 +188,182 @@ Movie DBHelper::SelectMovie(string s)
 	else {
 		//declare output variable and pointer
 		SQLINTEGER ptrSqlVersion;
-		char m_id[5];
-		char name[30];
-		char dir[30];
-		char cast[30];
-		char release_date[20];
-		char end[30];
-		char des[100];
-		char genre[50];
-		int running_time;
-		int price;
-		if (SQLFetch(sqlStmtHandle) == SQL_SUCCESS) {
-			SQLGetData(sqlStmtHandle, 1, SQL_CHAR, m_id, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 2, SQL_CHAR, name, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 3, SQL_CHAR, dir, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 4, SQL_CHAR, cast, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 5, SQL_CHAR, release_date, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 6, SQL_CHAR, end, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 7, SQL_CHAR, des, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 8, SQL_CHAR, genre, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 9, SQL_INTEGER, &running_time, 1, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 10, SQL_INTEGER, &price, 1, &ptrSqlVersion);
-			//tmp.setMovie(string(m_id), string(name), string(dir), string(cast), string(release_date), string(end), string(des), string(genre), running_time, price);
-		}
-		return Movie(string(m_id), string(name), string(dir), string(cast), string(release_date), string(end), string(des), string(genre), running_time, price);
-	}
-	SQLCancel(sqlStmtHandle);
-}
-
-vector<Account> DBHelper::SelectAccount(string us, string ps)
-{
-	vector<Account> acc;
-	cout << "\n";
-	cout << "Executing T-SQL query... movie";
-	cout << "\n";
-	string s1 = "SELECT * FROM account WHERE username = '";
-	string s2 = "' AND password = '";
-	string s3 = s1 + us + s2 + ps +"'" ;
-	const char* str = s3.c_str();
-	if (SQL_SUCCESS != SQLExecDirectA(sqlStmtHandle, (SQLCHAR*)str, SQL_NTS)) {
-		ShowError(SQL_HANDLE_DBC, sqlStmtHandle);
-		cout << "Error querying SQL Server";
-		cout << "\n";
-		close();
-	}
-	else {
-		//declare output variable and pointer
-		SQLINTEGER ptrSqlVersion;
-		char acc_id[5];
-		char staff_id[5];
-		char username[100];
-		char pass[100];
+		int id;
+		int no;
+		char roomid[5];
+		int row;
+		int status;
 		while (SQLFetch(sqlStmtHandle) == SQL_SUCCESS) {
-			SQLGetData(sqlStmtHandle, 1, SQL_CHAR, acc_id, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 2, SQL_CHAR, staff_id, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 3, SQL_CHAR, username, SQL_RESULT_LEN, &ptrSqlVersion);
-			SQLGetData(sqlStmtHandle, 4, SQL_CHAR, pass, SQL_RESULT_LEN, &ptrSqlVersion);
-			Account *tmp =  new Account(string(acc_id),string(staff_id),string(username),string(pass));
-			acc.push_back(*tmp);
-			delete tmp;
+			SQLGetData(sqlStmtHandle, 1, SQL_INTEGER, &id, 1, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 2, SQL_INTEGER, &no, 1, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 3, SQL_CHAR, roomid, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 4, SQL_INTEGER, &row, 1, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 5, SQL_INTEGER, &status, 1, &ptrSqlVersion);
+			list[count] = Seat(id,string(roomid),row,no,status);
+			++count;
 		}
+		for (int i = 0; i < count; i++)
+		{
+			s.push_back(list[i]);
+		}
+		return s;
 	}
-	return acc;
+	SQLCancel(sqlStmtHandle);
+
+}
+
+vector<Room> DBHelper::SelectRoom()
+{
+	vector<Room> r;
+	Room list[1000];
+	int count = 0;
+	if (SQL_SUCCESS != SQLExecDirect(sqlStmtHandle, (SQLWCHAR*)L"SELECT * FROM room", SQL_NTS)) {
+		ShowError(SQL_HANDLE_DBC, sqlStmtHandle);
+		cout << "Error querying SQL Server";
+		cout << "\n";
+		close();
+	}
+	else {
+		//declare output variable and pointer
+		SQLINTEGER ptrSqlVersion;
+		char id[10];
+		int no;
+		char time[20];
+		int status;
+		while (SQLFetch(sqlStmtHandle) == SQL_SUCCESS) {
+			SQLGetData(sqlStmtHandle, 1, SQL_CHAR, id, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 2, SQL_INTEGER, &no, 1, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 3, SQL_CHAR, time, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 4, SQL_INTEGER, &status, 1, &ptrSqlVersion);
+			list[count] = Room(string(id),no,string(time),status);
+			++count;
+		}
+		for (int i = 0; i < count; i++)
+		{
+			r.push_back(list[i]);
+		}
+		return r;
+	}
 	SQLCancel(sqlStmtHandle);
 }
 
-void DBHelper::Insert(const char* str)
+vector<Customer> DBHelper::SelectCustomer()
 {
-	cout << str << endl;
+	vector<Customer> c;
+	Customer list[1000];
+	int count = 0;
+	if (SQL_SUCCESS != SQLExecDirect(sqlStmtHandle, (SQLWCHAR*)L"SELECT * FROM Customer", SQL_NTS)) {
+		ShowError(SQL_HANDLE_DBC, sqlStmtHandle);
+		cout << "Error querying SQL Server";
+		cout << "\n";
+		close();
+	}
+	else {
+		//declare output variable and pointer
+		SQLINTEGER ptrSqlVersion;
+		int id;
+		char ten[50];
+		char add[150];
+		char phone[20];
+		char email[60];
+		while (SQLFetch(sqlStmtHandle) == SQL_SUCCESS) {
+			SQLGetData(sqlStmtHandle, 1, SQL_INTEGER, &id,1, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 2, SQL_CHAR, ten, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 3, SQL_CHAR, add, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 4, SQL_CHAR, phone, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 5, SQL_CHAR, email, SQL_RESULT_LEN, &ptrSqlVersion);
+			list[count] = Customer(id, ten, add, email, phone);
+			++count;
+		}
+		for (int i = 0; i < count; i++)
+		{
+			c.push_back(list[i]);
+		}
+		return c;
+	}
+	SQLCancel(sqlStmtHandle);
+}
+
+vector<Ticket> DBHelper::SelectTicket()
+{
+	vector<Ticket> t;
+	Ticket List[1000];
+	int count = 0;
+	if (SQL_SUCCESS != SQLExecDirect(sqlStmtHandle, (SQLWCHAR*)L"SELECT * FROM ticket", SQL_NTS)) {
+		ShowError(SQL_HANDLE_DBC, sqlStmtHandle);
+		cout << "Error querying SQL Server";
+		cout << "\n";
+		close();
+	}
+	else {
+		//declare output variable and pointer
+		SQLINTEGER ptrSqlVersion;
+		int id;
+		char machieu[10];
+		int c_id;
+		int s_id;
+		while (SQLFetch(sqlStmtHandle) == SQL_SUCCESS) {
+			SQLGetData(sqlStmtHandle, 1, SQL_INTEGER, &id, 1, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 2, SQL_CHAR, machieu, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 3, SQL_INTEGER, &c_id, 1, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 4, SQL_INTEGER, &s_id, 1, &ptrSqlVersion);
+			List[count] = Ticket(id, c_id, string(machieu),s_id);
+			++count;
+		}
+		for (int i = 0; i < count; i++)
+		{
+			t.push_back(List[i]);
+		}
+		return t;
+	}
+	SQLCancel(sqlStmtHandle);
+}
+
+vector<LichChieu> DBHelper::SelectLich()
+{
+	vector<LichChieu> lc;
+	LichChieu list[1000];
+	int count = 0;
+//	cout << "\n";
+//	cout << "Executing T-SQL query... movie";
+//	cout << "\n";
+	if (SQL_SUCCESS != SQLExecDirect(sqlStmtHandle, (SQLWCHAR*)L"SELECT * FROM lichchieu", SQL_NTS)) {
+		ShowError(SQL_HANDLE_DBC, sqlStmtHandle);
+		cout << "Error querying SQL Server";
+		cout << "\n";
+		close();
+	}
+	else {
+		//declare output variable and pointer
+		SQLINTEGER ptrSqlVersion;
+		char id[10];
+		char r_id[10];
+		char m_id[10];
+		char time[30];
+		char date[50];
+		int deleted;
+		while (SQLFetch(sqlStmtHandle) == SQL_SUCCESS) {
+			SQLGetData(sqlStmtHandle, 1, SQL_CHAR, id, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 2, SQL_CHAR, r_id, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 3, SQL_CHAR, m_id, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 4, SQL_CHAR, time, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 5, SQL_CHAR, date, SQL_RESULT_LEN, &ptrSqlVersion);
+			SQLGetData(sqlStmtHandle, 6, SQL_INTEGER, &deleted, 1, &ptrSqlVersion);
+			list[count] = LichChieu(string(id),string(r_id), string(m_id), string(date), string(time), deleted);
+			++count;
+		}
+		for (int i = 0; i < count; i++)
+		{
+			lc.push_back(list[i]);
+		}
+		return lc;
+	}
+	SQLCancel(sqlStmtHandle);
+}
+
+void DBHelper::ExecuteQuery(const char* str)
+{
+//	cout << str << endl;
 	if (SQL_SUCCESS != SQLExecDirectA(sqlStmtHandle, (SQLCHAR*)str, SQL_NTS)) {
 		cout << "\n";
 		cout << SQLExecDirectA(sqlStmtHandle, (SQLCHAR*)str, SQL_NTS) << endl;
@@ -314,7 +373,7 @@ void DBHelper::Insert(const char* str)
 		close();
 	}
 	else {
-		cout << "\nINSERT SUCCESS\n";
+//		cout << "\nINSERT SUCCESS\n";
 		return;
 	}
 }

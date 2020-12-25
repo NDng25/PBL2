@@ -1,16 +1,30 @@
 #include "Movie.h"
 
-Movie::Movie(string id,string name,string dir,string cast,string date,string end_date,string des,string genre,int run,int price)
-	:movie_id(id),name(name),dir(dir),cast(cast),release_date(date),end_show(end_date), des(des),genre(genre),running_time(run),price(price)
+Movie::Movie(string id,string name,string dir,string cast,string date,string end_date,string des,string genre,int run,int price,int deleted)
+	:movie_id(id),name(name),dir(dir),cast(cast),release_date(date),end_show(end_date), des(des),genre(genre),running_time(run),price(price),deleted(deleted)
 {
 
 }
+//
+//Movie::Movie(const Movie& m)
+//{
+//	movie_id = m.movie_id;
+//	name = m.name;
+//	dir = m.dir;
+//	cast = m.cast;
+//	release_date = m.release_date;
+//	end_show = m.end_show;
+//	des = m.des;
+//	genre = m.genre;
+//	running_time = m.running_time;
+//	price = m.price;
+//	deleted = m.deleted;
+//}
 
 Movie::~Movie()
 {
 
 }
-
 
 void Movie::showDetail()
 {
@@ -39,7 +53,18 @@ Movie& Movie::operator=(const Movie& m)
 	this->genre = m.genre;
 	this->running_time = m.running_time;
 	this->price = m.price;
+	this->deleted = m.deleted;
 	return *this;
+}
+
+bool Movie::operator<(const Movie& m)
+{
+	return (this->price < m.price);
+}
+
+bool Movie::operator>(const Movie& m)
+{
+	return (this->price > m.price);
 }
 
 string Movie::getid()
@@ -91,19 +116,9 @@ string Movie::getCast()
 	return this->cast;
 }
 
-void Movie::setRelease(string s)
-{
-	this->release_date = s;
-}
-
 string Movie::getRelease()
 {
 	return this->release_date;
-}
-
-void Movie::setEnd(string s)
-{
-	this->end_show = s;
 }
 
 string Movie::getEnd()
@@ -151,13 +166,44 @@ const int Movie::getPrice()
 	return this->price;
 }
 
+void Movie::setDeleted(int i)
+{
+	this->deleted = i;
+}
+
+int Movie::getDeleted()
+{
+	return this->deleted;
+}
+
+bool Movie::checkDate(string date)
+{
+	int month,day,year;
+	int input, end, start;
+	sscanf_s(date.c_str(), "%d-%d-%d", &year, &month, &day);
+	input = 10000 * year + 100 * month + day;
+	sscanf_s(this->release_date.c_str(), "%d-%d-%d", &year, &month, &day);
+	start = 10000 * year + 100 * month + day;
+	sscanf_s(this->end_show.c_str(), "%d-%d-%d", &year, &month, &day);
+	end = 10000 * year + 100 * month + day;
+	if (input <= end && input >= start) return 1;
+	else return 0;
+}
+
+bool operator==(const Movie& m1, const Movie& m2)
+{
+	return (m1.movie_id == m2.movie_id);
+}
+
 ostream& operator<<(ostream& o, const Movie& m)
 {
 	o << "id: " << m.movie_id << endl
 		<< "Ten phim: " << m.name << endl
 		<< "Dao dien: " << m.dir << ", Dien vien chinh: " << m.cast << endl
-		<< "Ngay phat hanh: " << m.release_date <<" Ngay dung chieu: "<<m.end_show<<endl 
-		<<"Thoi luong: " << m.running_time<<" phut" << endl
+		<< "Ngay phat hanh: " << m.release_date << " Ngay dung chieu: " << m.end_show << endl
+		<< "Mo ta: " << m.des << endl
+		<< "The loai: " << m.genre << endl
+		<< "Thoi luong: " << m.running_time<<" phut" << endl
 		<< "Gia ve: " << m.price <<" VND"<< endl;
 	return o;
 }

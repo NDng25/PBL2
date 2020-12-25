@@ -139,24 +139,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Account.cpp" />
-    <ClCompile Include="Admin.cpp" />
     <ClCompile Include="Customer.cpp" />
     <ClCompile Include="DBHelper.cpp" />
+    <ClCompile Include="LichChieu.cpp" />
     <ClCompile Include="Management.cpp" />
     <ClCompile Include="Movie.cpp" />
-    <ClCompile Include="Movieshow.cpp" />
     <ClCompile Include="PBL2.cpp" />
+    <ClCompile Include="QLPhim.cpp" />
+    <ClCompile Include="Room.cpp" />
+    <ClCompile Include="Seat.cpp" />
+    <ClCompile Include="Ticket.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Account.h" />
-    <ClInclude Include="Admin.h" />
     <ClInclude Include="Customer.h" />
     <ClInclude Include="DBHelper.h" />
+    <ClInclude Include="LichChieu.h" />
     <ClInclude Include="Management.h" />
     <ClInclude Include="Movie.h" />
-    <ClInclude Include="Movieshow.h" />
     <ClInclude Include="Person.h" />
+    <ClInclude Include="QLPhim.h" />
+    <ClInclude Include="Room.h" />
+    <ClInclude Include="Seat.h" />
+    <ClInclude Include="Ticket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

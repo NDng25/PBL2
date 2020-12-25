@@ -15,12 +15,18 @@ private:
 	string genre;
 	int running_time;
 	int price;
+	int deleted;
 public:
-	Movie(string = "",string = "",string ="",string = "",string ="",string ="",string ="",string ="",int = 0,int = 0);
+	Movie(string = "",string = "",string ="",string = "",string ="",string ="",string ="",string ="",int = 0,int = 0,int = 0);
+	//Movie(const Movie&);
 	~Movie();
 	void showDetail();
 	void show();
 	Movie& operator=(const Movie&); 
+	bool operator<(const Movie&);
+	bool operator>(const Movie&);
+	friend bool operator==(const Movie&,const Movie&);
+	//friend istream& operator>>(istream&, Movie&);
 	friend ostream& operator<<(ostream&, const Movie&);
 	string getid();
 	void setMovie(string, string, string, string, string, string, string, string, int&, int&);
@@ -30,9 +36,9 @@ public:
 	string getDir();
 	void setCast(string);
 	string getCast();
-	void setRelease(string);
+//	void setRelease(istream&);
 	string getRelease();
-	void setEnd(string);
+//	void setEnd(istream&);
 	string getEnd();
 	void setDes(string);
 	string getDes();
@@ -42,5 +48,7 @@ public:
 	const int getRunning();
 	void setPrice(const int&);
 	const int getPrice();
+	void setDeleted(int);
+	int getDeleted();
+	bool checkDate(string);
 };
-

@@ -7,14 +7,19 @@
 #include <iostream>
 #include <vector>
 #include "Movie.h"
-//#include "Staff.h"
-#include "Account.h"
+#include "Room.h"
+#include "Seat.h"
+#include "LichChieu.h"
+#include "Customer.h"
+#include "Ticket.h"
 #include<iomanip>
 #include<conio.h>
-//#include <string.h>
-// #include<string.h>
 #include <string>
 using namespace std;
+class Room;
+class LichChieu;
+class Customer;
+class Ticket;
 class DBHelper
 {
 #define SQL_RESULT_LEN 240
@@ -26,12 +31,13 @@ class DBHelper
 	SQLTCHAR retconstring[SQL_RETURN_CODE_LEN];
 public:
 	void init();
-	void Insert(const char*);
-//	void InsertMovie(const string);
-	int SelectCount(string);
+	void ExecuteQuery(const char*);
 	vector<Movie> SelectMovie();
-	Movie SelectMovie(string);
-	vector<Account> SelectAccount(string,string);
+	vector<Seat> SelectSeat(string);
+	vector<Room> SelectRoom();
+	vector<Customer> SelectCustomer();
+	vector<Ticket> SelectTicket();
+	vector<LichChieu> SelectLich();
 	void Update();
 	void Delete(const char*);
 	void ShowError(unsigned int, const SQLHANDLE&);
